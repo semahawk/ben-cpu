@@ -26,7 +26,7 @@ module mimasv2 (
 
     cpu cpu (
         .i_clk(i_clk),
-        .i_rst(1'b1),
+        .i_rst(i_rst),
         .o_out(LED)
     );
 

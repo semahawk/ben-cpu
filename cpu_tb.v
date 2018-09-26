@@ -47,7 +47,10 @@ module cpu_tb;
         #100;
 
         // Add stimulus here
-        #2000;
+        #500;
+        rst = 0;
+        rst = #100 1;
+        #300;
 
         $finish;
     end

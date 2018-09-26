@@ -84,12 +84,14 @@ module cpu (
     );
 
     always @ (posedge i_clk or negedge i_rst) begin
-        if (halted) begin
-            // nop
-        end else if (~i_rst) begin
+        if (~i_rst) begin
             pc <= 0;
             ctrl <= 0;
             stage <= `STAGE_T0;
+            halted <= 0;
+            out <= 0;
+        end else if (halted) begin
+            // nop
         end else begin // ~i_rst
             ctrl <= 0;
 
