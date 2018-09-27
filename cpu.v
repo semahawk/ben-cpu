@@ -35,15 +35,17 @@ module cpu (
     output wire [7:0] o_out
 );
 
-    localparam AI  = 0; // reg A in
-    localparam AO  = 1; // reg A out
-    localparam II  = 2; // instruction reg in
-    localparam IO  = 3; // instruction reg out
-    localparam IIO = 4; // instruction reg imm (low 4 bits) out
-    localparam OI  = 5; // output register in
-    localparam OO  = 6; // output register out
-    localparam MI  = 7; // memory (ROM) in
-    localparam MO  = 8; // memory (ROM) out
+    localparam AI  =  0; // reg A in
+    localparam AO  =  1; // reg A out
+    localparam BI  =  2; // reg B in
+    localparam BO  =  3; // reg B out
+    localparam II  =  4; // instruction reg in
+    localparam IO  =  5; // instruction reg out
+    localparam IIO =  6; // instruction reg imm (low 4 bits) out
+    localparam OI  =  7; // output register in
+    localparam OO  =  8; // output register out
+    localparam MI  =  9; // memory (ROM) in
+    localparam MO  = 10; // memory (ROM) out
 
     reg [3:0] pc = 0; // program counter
     reg [15:0] ctrl = 0;
@@ -61,6 +63,16 @@ module cpu (
         .i_rst(i_rst),
         .i_load(ctrl[AI]),
         .i_enable(ctrl[AO]),
+        .i_only_lower(1'b0),
+        .i_D(bus),
+        .o_Q(bus)
+    );
+
+    register b (
+        .i_clk(i_clk),
+        .i_rst(i_rst),
+        .i_load(ctrl[BI]),
+        .i_enable(ctrl[BO]),
         .i_only_lower(1'b0),
         .i_D(bus),
         .o_Q(bus)
