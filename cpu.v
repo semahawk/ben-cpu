@@ -41,11 +41,10 @@ module cpu (
     localparam BO  =  3; // reg B out
     localparam II  =  4; // instruction reg in
     localparam IO  =  5; // instruction reg out
-    localparam IIO =  6; // instruction reg imm (low 4 bits) out
-    localparam OI  =  7; // output register in
-    localparam OO  =  8; // output register out
-    localparam MI  =  9; // memory (ROM) in
-    localparam MO  = 10; // memory (ROM) out
+    localparam OI  =  6; // output register in
+    localparam OO  =  7; // output register out
+    localparam MI  =  8; // memory (ROM) in
+    localparam MO  =  9; // memory (ROM) out
 
     reg [3:0] pc = 0; // program counter
     reg [15:0] ctrl = 0;
@@ -83,7 +82,7 @@ module cpu (
         .i_rst(i_rst),
         .i_load(ctrl[II]),
         .i_enable(ctrl[IO]),
-        .i_only_lower(ctrl[IIO]),
+        .i_only_lower(ctrl[IO]),
         .i_D(bus),
         .o_Q(bus)
     );
@@ -123,7 +122,7 @@ module cpu (
                             stage <= `STAGE_T0;
                         end
                         `OP_LDI: begin
-                            ctrl <= (1 << AI) | (1 << IO) | (1 << IIO);
+                            ctrl <= (1 << AI) | (1 << IO);
                             stage <= `STAGE_T3;
                         end
                         `OP_OUT: begin
