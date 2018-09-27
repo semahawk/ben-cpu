@@ -10,6 +10,6 @@ which features a Spartan 6, and I'm using Xilinx's ISE WebPack 14.7, and I'm fla
 | Mnemonic | Binary coding | Meaning |
 |-|-|-|
 | NOP | `0000_xxxx` | Do nothing |
-| LDA <imm> | `0001_nnnn` | Load immediate, 4-bit value `nnnn` into register A |
+| LDI <imm> | `0101_nnnn` | Load immediate, 4-bit value `nnnn` into register A |
 | OUT | `1110_xxxx` | Push the current bus's state into the OUT register (on my board it goes onto the LEDs) |
 | HLT | `1111_xxxx` | Halts the CPU (cannot recover, except by powercycling) |

@@ -25,7 +25,7 @@
 `define STAGE_T4 4
 
 `define OP_NOP 4'b0000
-`define OP_LDA 4'b0001
+`define OP_LDI 4'b0101
 `define OP_OUT 4'b1110
 `define OP_HLT 4'b1111
 
@@ -122,7 +122,7 @@ module cpu (
                         `OP_NOP: begin
                             stage <= `STAGE_T0;
                         end
-                        `OP_LDA: begin
+                        `OP_LDI: begin
                             ctrl <= (1 << AI) | (1 << IO) | (1 << IIO);
                             stage <= `STAGE_T3;
                         end
@@ -142,7 +142,7 @@ module cpu (
                 end // `STAGE_T2
                 `STAGE_T3: begin
                     case (opcode)
-                        `OP_LDA: begin
+                        `OP_LDI: begin
                             stage <= `STAGE_T0;
                         end
                         `OP_OUT: begin
