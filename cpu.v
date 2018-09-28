@@ -43,8 +43,8 @@ module cpu (
     localparam IO  =  5; // instruction reg out
     localparam OI  =  6; // output register in
     localparam OO  =  7; // output register out
-    localparam MI  =  8; // memory (ROM) in
-    localparam MO  =  9; // memory (ROM) out
+    localparam RI  =  8; // memory (ROM) in
+    localparam RO  =  9; // memory (ROM) out
 
     reg [3:0] pc = 0; // program counter
     reg [15:0] ctrl = 0;
@@ -89,7 +89,7 @@ module cpu (
 
     rom rom (
         .i_clk(i_clk),
-        .i_enable(ctrl[MO]),
+        .i_enable(ctrl[RO]),
         .i_addr(pc),
         .o_instr(bus)
     );
@@ -108,7 +108,7 @@ module cpu (
 
             case (stage)
                 `STAGE_T0: begin
-                    ctrl <= (1 << MO) | (1 << II);
+                    ctrl <= (1 << RO) | (1 << II);
                     stage <= `STAGE_T1;
                 end // `STAGE_T0
                 `STAGE_T1: begin
