@@ -25,12 +25,17 @@ module rom (
     output wire [7:0] o_instr
 );
 
+    reg [7:0] out = 0;
     reg [7:0] code [0:15];
 
     initial begin
         $readmemb("rom_code.bin", code);
     end
 
-    assign o_instr = i_enable ? code[i_addr] : 8'hZZ;
+    assign o_instr = i_enable ? out : 8'hZZ;
+
+    always @ (posedge i_clk) begin
+        out <= code[i_addr];
+    end
 
 endmodule

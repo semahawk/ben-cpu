@@ -46,11 +46,7 @@ module cpu_tb;
         // Wait 100 ns for global reset to finish
         #100;
 
-        // Add stimulus here
         #500;
-        rst = 0;
-        rst = #100 1;
-        #300;
 
         $finish;
     end
