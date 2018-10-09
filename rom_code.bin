@@ -1,6 +1,7 @@
 0001_1111 // lda 0xf - load reg A with value from [0xf]
 0010_1110 // add 0xe - load reg B with value from [0xe], add to A and store result in A
 1110_0000 // out - output reg A
+0110_0001 // jmp 0x1
 1111_0000 // hlt - halt the CPU
 0000_0000 // nop
 0000_0000
@@ -11,6 +12,5 @@
 0000_0000
 0000_0000
 0000_0000
-0000_0000
-0000_0011 // data
-0110_1000 // data
+0000_0001 // data
+0000_0000 // data

@@ -29,6 +29,7 @@
 `define OP_LDA 4'b0001
 `define OP_ADD 4'b0010
 `define OP_LDI 4'b0101
+`define OP_JMP 4'b0110
 `define OP_OUT 4'b1110
 `define OP_HLT 4'b1111
 
@@ -166,6 +167,10 @@ module cpu (
                         `OP_ADD: begin
                             ctrl <= (1 << RI) | (1 << IO);
                             stage <= `STAGE_T4;
+                        end
+                        `OP_JMP: begin
+                            ctrl <= (1 << IO) | (1 << J);
+                            stage <= `STAGE_T0;
                         end
                         `OP_OUT: begin
                             ctrl <= (1 << AO) | (1 << OI);

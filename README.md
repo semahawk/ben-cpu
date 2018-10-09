@@ -12,6 +12,7 @@ which features a Spartan 6, and I'm using Xilinx's ISE WebPack 14.7, and I'm fla
 | NOP | `0000_xxxx` | Do nothing |
 | LDA <addr> | `0001_nnnn` | Load 8-bit value from memory at address `nnnn` into register A |
 | ADD <addr> | `0010_nnnn` | Load 8-bit value from memory at address `nnnn` into register B, then add A and B and store result in A |
+| JMP <addr> | `0110_nnnn` | Jump to address `nnnn` |
 | LDI <imm> | `0101_nnnn` | Load immediate, 4-bit value `nnnn` into register A |
 | OUT | `1110_xxxx` | Push the current bus's state into the OUT register (on my board it goes onto the LEDs) |
 | HLT | `1111_xxxx` | Halts the CPU (cannot recover, except by powercycling) |
