@@ -25,7 +25,8 @@ module register (
     input i_enable,
     input i_only_lower,
     input [7:0] i_D,
-    output [7:0] o_Q
+    output [7:0] o_Q,
+    output [7:0] o_direct
 );
 
     dff upper[7:4](
@@ -35,7 +36,8 @@ module register (
         .i_enable(i_enable),
         .i_zeroize(i_only_lower),
         .i_D(i_D[7:4]),
-        .o_Q(o_Q[7:4])
+        .o_Q(o_Q[7:4]),
+        .o_direct(o_direct[7:4])
     );
 
     dff lower[3:0](
@@ -45,7 +47,8 @@ module register (
         .i_enable(i_enable),
         .i_zeroize(1'b0),
         .i_D(i_D[3:0]),
-        .o_Q(o_Q[3:0])
+        .o_Q(o_Q[3:0]),
+        .o_direct(o_direct[3:0])
     );
 
 endmodule

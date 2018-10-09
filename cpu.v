@@ -23,9 +23,11 @@
 `define STAGE_T2 2
 `define STAGE_T3 3
 `define STAGE_T4 4
+`define STAGE_T5 5
 
 `define OP_NOP 4'b0000
 `define OP_LDA 4'b0001
+`define OP_ADD 4'b0010
 `define OP_LDI 4'b0101
 `define OP_OUT 4'b1110
 `define OP_HLT 4'b1111
@@ -49,6 +51,8 @@ module cpu (
     localparam J   = 10; // program counter in (jump)
     localparam CO  = 11; // program counter out
     localparam CE  = 12; // enable counting
+    localparam EO  = 13; // ALU result out
+    localparam SU  = 14; // subtract signal for the ALU
 
     reg [15:0] ctrl = 0;
     reg halted = 0;
@@ -60,6 +64,8 @@ module cpu (
 
     assign o_out = out;
 
+    wire [7:0] reg_a_direct, reg_b_direct;
+
     register a (
         .i_clk(i_clk),
         .i_rst(i_rst),
@@ -67,7 +73,8 @@ module cpu (
         .i_enable(ctrl[AO]),
         .i_only_lower(1'b0),
         .i_D(bus),
-        .o_Q(bus)
+        .o_Q(bus),
+        .o_direct(reg_a_direct)
     );
 
     register b (
@@ -77,7 +84,8 @@ module cpu (
         .i_enable(ctrl[BO]),
         .i_only_lower(1'b0),
         .i_D(bus),
-        .o_Q(bus)
+        .o_Q(bus),
+        .o_direct(reg_b_direct)
     );
 
     register instr (
@@ -105,6 +113,16 @@ module cpu (
         .i_enable(ctrl[RO]),
         .i_addr(bus[3:0]),
         .o_instr(bus)
+    );
+
+    alu alu (
+        .i_clk(i_clk),
+        .i_rst(i_rst),
+        .i_enable(ctrl[EO]),
+        .i_subtract(ctrl[SU]),
+        .i_reg_a(reg_a_direct),
+        .i_reg_b(reg_b_direct),
+        .o_result(bus)
     );
 
     always @ (posedge i_clk or negedge i_rst) begin
@@ -145,6 +163,10 @@ module cpu (
                             ctrl <= (1 << AI) | (1 << IO);
                             stage <= `STAGE_T4;
                         end
+                        `OP_ADD: begin
+                            ctrl <= (1 << RI) | (1 << IO);
+                            stage <= `STAGE_T4;
+                        end
                         `OP_OUT: begin
                             ctrl <= (1 << AO) | (1 << OI);
                             stage <= `STAGE_T4;
@@ -168,6 +190,10 @@ module cpu (
                         `OP_LDI: begin
                             stage <= `STAGE_T0;
                         end
+                        `OP_ADD: begin
+                            ctrl <= (1 << RO) | (1 << BI);
+                            stage <= `STAGE_T5;
+                        end
                         `OP_OUT: begin
                             out <= bus;
                             stage <= `STAGE_T0;
@@ -178,6 +204,18 @@ module cpu (
                         end
                     endcase
                 end // `STAGE_T4
+                `STAGE_T5: begin
+                    case (opcode)
+                        `OP_ADD: begin
+                            ctrl <= (1 << EO) | (1 << AI);
+                            stage <= `STAGE_T0;
+                        end
+                        default: begin
+                            $display("WARNING: unknown opcode: %b", opcode);
+                            stage <= `STAGE_T0;
+                        end
+                    endcase
+                end // `STAGE_T5
             endcase
         end // i_rst
     end

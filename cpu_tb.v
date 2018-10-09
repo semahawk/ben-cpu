@@ -47,8 +47,6 @@ module cpu_tb;
         #100;
 
         #500;
-
-        $finish;
     end
     
     always begin

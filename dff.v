@@ -25,7 +25,8 @@ module dff (
     input i_enable,
     input i_zeroize, // makes the DFF output a 0, instead of i_D
     input i_D,
-    output o_Q
+    output o_Q,
+    output o_direct
 );
 
     reg out = 0;
@@ -39,5 +40,6 @@ module dff (
     end
 
     assign o_Q = (i_enable ? (i_zeroize ? 1'b0 : out) : (1'bZ));
+    assign o_direct = out;
 
 endmodule
