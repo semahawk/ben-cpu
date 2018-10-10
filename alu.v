@@ -26,12 +26,17 @@ module alu (
     input i_subtract, // 0 - add, 1 - subtract
     input [7:0] i_reg_a,
     input [7:0] i_reg_b,
+    output o_carry,
+    output o_zero,
     output [7:0] o_result
 );
 
-    reg [7:0] out = 0;
+    // additional bit for the carry
+    reg [7+1:0] out = 0;
 
-    assign o_result = i_enable ? out : 8'bZZZZZZZZ;
+    assign o_result = i_enable ? out[7:0] : 8'bZZ;
+    assign o_carry = out[8];
+    assign o_zero = out[7:0] == 8'h00;
 
     always @* begin
         if (~i_rst) begin

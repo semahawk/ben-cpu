@@ -31,6 +31,8 @@
 `define OP_SUB 4'b0011
 `define OP_LDI 4'b0101
 `define OP_JMP 4'b0110
+`define OP_JC  4'b0111
+`define OP_JZ  4'b1000
 `define OP_OUT 4'b1110
 `define OP_HLT 4'b1111
 
@@ -55,6 +57,11 @@ module cpu (
     localparam CE  = 12; // enable counting
     localparam EO  = 13; // ALU result out
     localparam SU  = 14; // subtract signal for the ALU
+    localparam FI  = 15; // flags register in
+
+    // meaning of bits in the flags register
+    localparam FL_C = 1; // ALU result overflown (carry)
+    localparam FL_Z = 0; // ALU result equal to 0
 
     reg [15:0] ctrl = 0;
     reg halted = 0;
@@ -67,6 +74,11 @@ module cpu (
     assign o_out = out;
 
     wire [7:0] reg_a_direct, reg_b_direct;
+    // these are outputs from the ALU, inputs to the flags register
+    wire alu_out_carry, alu_out_zero;
+    // this is the direct output of the flags register
+    // ie. it doesn't need to go onto the bus
+    wire [7:0] flags_direct;
 
     register a (
         .i_clk(i_clk),
@@ -97,7 +109,19 @@ module cpu (
         .i_enable(ctrl[IO]),
         .i_only_lower(ctrl[IO]),
         .i_D(bus),
-        .o_Q(bus)
+        .o_Q(bus),
+        .o_direct(/* nc */)
+    );
+
+    register flags (
+        .i_clk(i_clk),
+        .i_rst(i_rst),
+        .i_load(ctrl[FI]),
+        .i_enable(1'b0),
+        .i_only_lower(1'b0),
+        .i_D({ 6'b0, alu_out_carry, alu_out_zero }),
+        .o_Q(/* nc */),
+        .o_direct(flags_direct)
     );
 
     counter pc (
@@ -124,6 +148,8 @@ module cpu (
         .i_subtract(ctrl[SU]),
         .i_reg_a(reg_a_direct),
         .i_reg_b(reg_b_direct),
+        .o_carry(alu_out_carry),
+        .o_zero(alu_out_zero),
         .o_result(bus)
     );
 
@@ -177,6 +203,24 @@ module cpu (
                             ctrl <= (1 << IO) | (1 << J);
                             stage <= `STAGE_T0;
                         end
+                        `OP_JC: begin
+                            if (flags_direct[FL_C]) begin
+                                ctrl <= (1 << IO) | (1 << J);
+                            end else begin
+                                ctrl <= 0;
+                            end
+
+                            stage <= `STAGE_T0;
+                        end
+                        `OP_JZ: begin
+                            if (flags_direct[FL_Z]) begin
+                                ctrl <= (1 << IO) | (1 << J);
+                            end else begin
+                                ctrl <= 0;
+                            end
+
+                            stage <= `STAGE_T0;
+                        end
                         `OP_OUT: begin
                             ctrl <= (1 << AO) | (1 << OI);
                             stage <= `STAGE_T4;
@@ -221,11 +265,11 @@ module cpu (
                 `STAGE_T5: begin
                     case (opcode)
                         `OP_ADD: begin
-                            ctrl <= (1 << EO) | (1 << AI);
+                            ctrl <= (1 << EO) | (1 << AI) | (1 << FI);
                             stage <= `STAGE_T0;
                         end
                         `OP_SUB: begin
-                            ctrl <= (1 << EO) | (1 << AI) | (1 << SU);
+                            ctrl <= (1 << EO) | (1 << AI) | (1 << SU) | (1 << FI);
                             stage <= `STAGE_T0;
                         end
                         default: begin
