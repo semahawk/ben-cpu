@@ -27,6 +27,7 @@ module mimasv2_tb;
     // Inputs
     reg i_clk;
     reg i_rst;
+    reg [7:0] DPSwitch;
 
     // Outputs
     wire [7:0] LED;
@@ -35,20 +36,32 @@ module mimasv2_tb;
     mimasv2 uut (
         .i_clk(i_clk), 
         .i_rst(1'b1), 
+        .DPSwitch(DPSwitch),
         .LED(LED)
     );
 
     initial begin
         // Initialize Inputs
         i_clk = 0;
-        i_rst = 0;
+        i_rst = 1;
+        DPSwitch = 8'b11111111;
 
         // Wait 100 ns for global reset to finish
         #100;
         
         // Add stimulus here
-        #5000;
-        $finish;
+        #50000;
+        DPSwitch = 8'b11111110;
+        #50000;
+        DPSwitch = 8'b11111100;
+        #50000;
+        DPSwitch = 8'b11111011;
+        #50000;
+        DPSwitch = 8'b00000001;
+        #50000;
+        DPSwitch = 8'b10000001;
+        #50000;
+        DPSwitch = 8'b11111101;
     end
     
     always begin
